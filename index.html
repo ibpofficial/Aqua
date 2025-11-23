@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aqua Pod | The Ultimate Student Innovation</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #00B4D8;
+            --primary-dark: #0077B6;
+            --dark-blue: #03045E;
+            --accent: #FF9F1C;
+            --danger: #ef233c;
+            --bg: #F0F4F8;
+            --surface: #FFFFFF;
+            --text: #2B2D42;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; overflow-x: hidden; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .price-font { font-family: 'Space Grotesk', sans-serif; }
+
+        /* --- UI COMPONENTS --- */
+        .btn-main {
+            background: var(--dark-blue); color: white; padding: 12px 35px;
+            border-radius: 50px; text-decoration: none; font-weight: 700; transition: 0.3s;
+            border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
+            font-size: 1.1rem;
+        }
+        .btn-main:hover { background: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 180, 216, 0.3); }
+
+        .section-title { font-size: 2.8rem; color: var(--dark-blue); margin-bottom: 1rem; text-align: center; font-weight: 700; }
+        .section-subtitle { text-align: center; color: #666; margin-bottom: 4rem; font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+        /* --- TICKER TAPE --- */
+        .ticker-wrap { width: 100%; overflow: hidden; background-color: var(--accent); padding: 8px 0; color: white; font-weight: bold; position: sticky; top: 0; z-index: 2000; font-family: 'Space Grotesk', sans-serif; }
+        .ticker { display: inline-block; animation: marquee 25s linear infinite; white-space: nowrap; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* --- NAVBAR --- */
+        nav {
+            display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%;
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px);
+            position: sticky; top: 38px; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .logo { font-size: 1.8rem; font-weight: 800; color: var(--dark-blue); letter-spacing: -1px; }
+        .logo span { color: var(--primary); }
+        .nav-links { display: flex; gap: 25px; }
+        .nav-links a { text-decoration: none; color: var(--text); font-weight: 600; font-size: 0.9rem; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            display: flex; align-items: center; padding: 5rem 5% 8rem 5%; min-height: 90vh;
+            position: relative; background: radial-gradient(circle at 10% 20%, rgb(239, 246, 255) 0%, rgb(255, 255, 255) 90%);
+        }
+        .hero-content { flex: 1; z-index: 2; padding-right: 2rem; }
+        .hero-img { flex: 1; display: flex; justify-content: center; z-index: 2; position: relative; }
+        
+        h1 { font-size: 4.5rem; line-height: 1; margin-bottom: 1.5rem; color: var(--dark-blue); letter-spacing: -2px; }
+        
+        .hero-img img { 
+            width: 80%; max-width: 500px; border-radius: 40px; 
+            box-shadow: 20px 20px 60px rgba(0, 180, 216, 0.2);
+            transform: rotate(-5deg); transition: 0.5s;
+        }
+        .hero-img:hover img { transform: rotate(0deg) scale(1.02); }
+
+        /* Countdown */
+        .countdown-container { display: flex; gap: 15px; margin: 2rem 0; }
+        .time-box { text-align: center; background: white; padding: 10px 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        .time-val { font-size: 1.8rem; font-weight: 800; color: var(--primary); display: block; line-height: 1; }
+        .time-label { font-size: 0.7rem; color: #777; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- PROBLEM SECTION --- */
+        .problem-section { padding: 6rem 5%; background: white; }
+        .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+        .problem-card { padding: 2rem; border-radius: 20px; background: #fff5f5; border: 1px solid #ffccd5; text-align: center; transition: 0.3s; }
+        .problem-card:hover { transform: translateY(-5px); }
+        .problem-icon { font-size: 2.5rem; color: var(--danger); margin-bottom: 1rem; }
+
+        /* --- VIDEO & TECH --- */
+        .video-section { padding: 8rem 5%; background: var(--dark-blue); color: white; text-align: center; position: relative; overflow: hidden; }
+        .video-wrapper {
+            max-width: 900px; margin: 3rem auto; border-radius: 20px; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 8px solid rgba(255,255,255,0.1);
+            position: relative; aspect-ratio: 16/9; background: #000;
+        }
+        .video-overlay { position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); pointer-events: none; }
+        .video-text { pointer-events: all; padding: 20px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 10px; }
+
+        /* --- STEPS / TIMELINE --- */
+        .steps-section { padding: 8rem 5%; background: #fff; }
+        .steps-container { display: flex; justify-content: space-between; max-width: 1000px; margin: 0 auto; position: relative; }
+        .steps-line { position: absolute; top: 40px; left: 0; width: 100%; height: 4px; background: #eee; z-index: 1; }
+        .step-card { position: relative; z-index: 2; width: 30%; text-align: center; background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .step-num { width: 80px; height: 80px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800; margin: -60px auto 20px auto; border: 5px solid white; }
+
+        /* --- ECONOMICS TABLE --- */
+        .economics-section { padding: 6rem 5%; background: #F8F9FA; }
+        .table-container { max-width: 900px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 1.5rem; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f1f5f9; color: var(--dark-blue); }
+        .highlight-row { background: #e0f7fa; border-left: 5px solid var(--primary); }
+        .positive { color: #198754; font-weight: bold; }
+        .negative { color: #dc3545; }
+
+        /* --- RECHARGE REVENUE MODEL --- */
+        .refill-section { background: var(--dark-blue); color: white; padding: 4rem 5%; display: flex; align-items: center; justify-content: space-between; border-radius: 20px; margin: 4rem 5%; position: relative; overflow: hidden; }
+        .refill-content { flex: 2; z-index: 2; }
+        .refill-price { font-size: 4rem; font-weight: 700; color: var(--accent); line-height: 1; }
+
+        /* --- TEAM & REVIEWS --- */
+        .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 3rem; text-align: center; }
+        .member-img { width: 100px; height: 100px; background: #eee; border-radius: 50%; margin: 0 auto 1rem auto; display: flex; align-items: center; justify-content: center; border: 3px solid var(--primary); color: #ccc; font-size: 2rem; }
+        
+        .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem; }
+        .review-card { padding: 2rem; background: white; border: 1px solid #eee; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); }
+
+        /* --- CONTACT & FOOTER --- */
+        .contact-section { background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-dark) 100%); color: white; padding: 5rem 5%; text-align: center; margin-top: 4rem; border-radius: 30px 30px 0 0; }
+        footer { background: #000814; color: #888; padding: 4rem 5% 2rem 5%; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 3rem; margin-bottom: 3rem; }
+        .footer-col h4 { color: white; margin-bottom: 1.5rem; }
+        .footer-col a { display: block; color: #888; text-decoration: none; margin-bottom: 0.5rem; transition: 0.3s; }
+        .footer-col a:hover { color: var(--primary); }
+
+        /* --- CART DRAWER --- */
+        .cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2999; display: none; }
+        .cart-drawer { position: fixed; top: 0; right: -400px; width: 400px; height: 100%; background: white; z-index: 3000; padding: 2rem; transition: 0.4s; display: flex; flex-direction: column; }
+        .cart-drawer.active { right: 0; }
+
+        /* --- CHECKOUT MODAL (NEW) --- */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:4000; display:none; justify-content:center; align-items:center; }
+        .modal-box { background: white; width: 90%; max-width: 500px; padding: 2rem; border-radius: 20px; position: relative; animation: slideUp 0.3s ease; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #555; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; outline: none; }
+        .form-group input:focus { border-color: var(--primary); }
+
+        /* Wave Separator */
+        .wave-bottom { position: absolute; bottom: -1px; left: 0; width: 100%; overflow: hidden; line-height: 0; transform: rotate(180deg); }
+        .wave-bottom svg { position: relative; display: block; width: calc(100% + 1.3px); height: 100px; }
+        .wave-bottom .shape-fill { fill: #FFFFFF; }
+
+        @media(max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .hero, .steps-container, .refill-section { flex-direction: column; }
+            .hero-img { margin-top: 3rem; }
+            .steps-line { display: none; }
+            .step-card { width: 100%; margin-bottom: 3rem; }
+            .nav-links { display: none; }
+            .cart-drawer { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. TICKER TAPE -->
+    <div class="ticker-wrap">
+        <div class="ticker">
+            🚀 LAUNCHING SOON • PRE-ORDER NOW FOR ₹350 • STOP HAIR FALL • GET A FREE TDS METER ON FIRST 100 ORDERS • STUDENT INNOVATION • 🚀 BATCH 1 FILLING FAST •
+        </div>
+    </div>
+
+    <!-- 2. NAVBAR -->
+    <nav>
+        <div class="logo">AQUA <span>POD.</span></div>
+        <div class="nav-links">
+            <a href="#problem">Problem</a>
+            <a href="#works">How it Works</a>
+            <a href="#economics">Savings</a>
+            <a href="#team">Team</a>
+        </div>
+        <button onclick="toggleCart()" class="btn-main" style="padding: 8px 25px; font-size: 0.9rem;">
+            <i class="fa-solid fa-shopping-cart"></i> <span id="cart-badge-text">Cart (0)</span>
+        </button>
+    </nav>
+
+    <!-- 3. HERO SECTION -->
+    <header class="hero">
+        <div class="hero-content">
+            <span style="background: #e0f7fa; color: var(--primary-dark); padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; display: inline-block; margin-bottom: 1rem;">
+                <i class="fa-solid fa-bolt"></i> IIT Delhi Innovation
+            </span>
+            <h1>Soft Water.<br><span style="color: var(--primary);">Student Price.</span></h1>
+            <p style="font-size: 1.2rem; color: #555; margin-bottom: 2rem; max-width: 500px;">
+                The portable, 90-second solution to hostel hard water. Save your hair without breaking the bank.
+            </p>
+
+            <!-- Countdown -->
+            <div class="countdown-container">
+                <div class="time-box">
+                    <span class="time-val" id="days">08</span>
+                    <span class="time-label">Days</span>
+                </div>
+                <div class="time-box">
+                    <span class="time-val" id="hours">12</span>
+                    <span class="time-label">Hours</span>
+                </div>
+                <div class="time-box">
+                    <span class="time-val" id="minutes">45</span>
+                    <span class="time-label">Mins</span>
+                </div>
+            </div>
+
+            <!-- Price Block -->
+            <div style="display: flex; gap: 20px; align-items: center; margin: 2rem 0;">
+                <div>
+                    <span style="color: #888; text-decoration: line-through; font-size: 1.2rem;">₹999</span>
+                    <span class="price-font" style="font-size: 3rem; font-weight: 700; color: var(--dark-blue); line-height: 1;">₹350</span>
+                </div>
+                <div style="background: var(--accent); color: white; padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; font-weight: bold;">
+                    65% OFF
+                </div>
+            </div>
+
+            <button onclick="addToCart(350, 'Aqua Pod V1')" class="btn-main">
+                RESERVE YOUR POD <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: #666;">*No payment required today.</p>
+        </div>
+
+        <div class="hero-img">
+            <img src="wdd.jpg" alt="Aqua Pod Device">
+            <!-- Floating Bonus Badge -->
+            <div style="position: absolute; top: 10%; right: 0; background: white; padding: 10px 20px; border-radius: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); animation: float 3s infinite ease-in-out;">
+                <i class="fa-solid fa-gift" style="color: var(--accent);"></i> Free TDS Meter
+            </div>
+        </div>
+
+        <div class="wave-bottom">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill" fill="#FFFFFF"></path>
+            </svg>
+        </div>
+    </header>
+
+    <!-- 4. PAIN POINTS (The Problem) -->
+    <section id="problem" class="problem-section">
+        <h2 class="section-title">Is Hard Water Ruining You?</h2>
+        <p class="section-subtitle">If you live in a hostel or apartment, you face these every day.</p>
+        
+        <div class="problem-grid">
+            <div class="problem-card">
+                <i class="fa-solid fa-shower problem-icon"></i>
+                <h3>Hair Fall</h3>
+                <p>Calcium blocks hair follicles, leading to breakage and hair loss.</p>
+            </div>
+            <div class="problem-card">
+                <i class="fa-solid fa-hand-dots problem-icon"></i>
+                <h3>Dry Skin</h3>
+                <p>Hard water strips natural oils, leaving skin itchy and rough.</p>
+            </div>
+            <div class="problem-card">
+                <i class="fa-solid fa-shirt problem-icon"></i>
+                <h3>Faded Clothes</h3>
+                <p>Minerals trap dirt in fabric fibers, making clothes look old.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. VIDEO SOLUTION -->
+    <section class="video-section">
+        <span style="color: var(--primary); font-weight: 700; letter-spacing: 2px;">THE SOLUTION</span>
+        <h2 class="section-title" style="color: white; margin-top: 10px;">Magic in a Bucket</h2>
+        
+        <div class="video-wrapper">
+            <!-- Simulated Video -->
+            <video width="100%" height="100%" autoplay loop muted playsinline poster="wdd.jpg" style="object-fit: cover; opacity: 0.5;">
+                <source src="promo.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay">
+                <div class="video-text">
+                    <i class="fa-solid fa-play-circle" style="font-size: 4rem; color: white;"></i>
+                    <h3 style="margin-top: 1rem;">Watch Demo</h3>
+                    <p>See how Aqua Pod works instantly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. HOW IT WORKS -->
+    <section id="works" class="steps-section">
+        <h2 class="section-title">3 Simple Steps</h2>
+        <p class="section-subtitle">No plumbing. No electricity. Just simple chemistry.</p>
+        
+        <div class="steps-container">
+            <div class="steps-line"></div>
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <h3>Fill Bucket</h3>
+                <p>Fill your bathing bucket with tap water.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <h3>Drop Pod</h3>
+                <p>Swirl the pod for 90 seconds.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <h3>Bathe</h3>
+                <p>Remove pod and enjoy soft water.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. ECONOMICS -->
+    <section id="economics" class="economics-section">
+        <h2 class="section-title">Why Students Love Us</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:40%">Solution Type</th>
+                        <th>Yearly Cost</th>
+                        <th>Portability</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Home RO System</strong></td>
+                        <td class="negative">₹15,000+</td>
+                        <td class="negative">Zero</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Water Jars</strong></td>
+                        <td class="negative">₹7,200</td>
+                        <td class="negative">Low</td>
+                    </tr>
+                    <tr class="highlight-row">
+                        <td><strong style="color:var(--dark-blue)">Aqua Pod</strong></td>
+                        <td class="positive">₹350 Only</td>
+                        <td class="positive">Fits in Pocket</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 8. RECHARGE PACKS -->
+    <section class="refill-section">
+        <div class="refill-content">
+            <span style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.9rem;">REVENUE MODEL</span>
+            <h2 class="price-font" style="font-size: 3rem; margin-top: 10px;">Low on Power?</h2>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">
+                The Aqua Pod is reusable. Simply recharge the resin beads using our salt packs.
+            </p>
+            <button onclick="addToCart(20, 'Salt Recharge Pack')" style="background: white; color: var(--dark-blue); padding: 15px 30px; border-radius: 50px; font-weight: bold; border: none; cursor: pointer;">
+                Add Recharge Pack
+            </button>
+        </div>
+        <div style="text-align: center;">
+            <div class="refill-price">₹20</div>
+            <div>per pack</div>
+        </div>
+    </section>
+
+    <!-- 9. TEAM & STORY -->
+    <section id="team" style="padding: 6rem 5%; background: white;">
+        <h2 class="section-title">Born in Room 304</h2>
+        <p class="section-subtitle">We are engineering students solving our own hostel problems.</p>
+        
+        <div class="team-grid">
+            <div>
+                <div class="member-img"><i class="fa-solid fa-user"></i></div>
+                <h4>Arjun Sharma</h4>
+                <p style="color:var(--primary)">Product Lead</p>
+            </div>
+            <div>
+                <div class="member-img"><i class="fa-solid fa-flask"></i></div>
+                <h4>Neha Gupta</h4>
+                <p style="color:var(--primary)">Chemistry Lead</p>
+            </div>
+            <div>
+                <div class="member-img"><i class="fa-solid fa-chart-line"></i></div>
+                <h4>Rohan Mehta</h4>
+                <p style="color:var(--primary)">Marketing</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. REVIEWS -->
+    <section style="padding: 4rem 5%; background: #F8F9FA;">
+        <h2 class="section-title">Campus Buzz</h2>
+        <div class="reviews-grid">
+            <div class="review-card">
+                <div style="color:var(--accent); margin-bottom:10px;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <p>"My hair fall reduced significantly after just one week. It's a lifesaver."</p>
+                <div style="margin-top:15px; font-weight:bold;">- Rahul M., Hostel 4</div>
+            </div>
+            <div class="review-card">
+                <div style="color:var(--accent); margin-bottom:10px;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                <p>"Finally a solution that fits in my budget. Recharging is super easy."</p>
+                <div style="margin-top:15px; font-weight:bold;">- Sneha K., Medical Student</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 11. CONTACT & FOOTER -->
+    <section id="contact" class="contact-section">
+        <h2 style="margin-bottom: 1rem;">Join the Waitlist</h2>
+        <p style="margin-bottom: 2rem;">Be the first to know when Batch 1 drops.</p>
+        <div style="max-width: 500px; margin: 0 auto; display: flex; gap: 10px;">
+            <input type="email" placeholder="Enter email address" style="flex: 1; padding: 15px; border-radius: 50px; border: none; outline: none;">
+            <button style="background: var(--accent); border: none; padding: 15px 30px; border-radius: 50px; cursor: pointer; font-weight: bold;">Join</button>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4 style="color: var(--primary);">AQUA POD.</h4>
+                <p>Innovating water solutions for students, by students.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <a href="#">Technology</a>
+                <a href="#">Lab Reports</a>
+                <a href="#">Support</a>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <a href="#">hello@aquapod.in</a>
+                <a href="#">+91 98765 43210</a>
+                <a href="#">Incubation Center, IIT Delhi</a>
+            </div>
+        </div>
+        <div style="text-align: center; border-top: 1px solid #222; padding-top: 2rem; font-size: 0.8rem;">
+            &copy; 2025 Aqua Pod Innovations. All Rights Reserved.
+        </div>
+    </footer>
+
+    <!-- CART SIDEBAR -->
+    <div class="cart-overlay" onclick="toggleCart()"></div>
+    <div class="cart-drawer" id="cart-drawer">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+            <h3>Your Reservation</h3>
+            <i class="fa-solid fa-xmark" style="cursor:pointer; font-size:1.5rem;" onclick="toggleCart()"></i>
+        </div>
+        <div id="cart-items" style="flex:1;">
+            <p style="color:#777;">Cart is empty.</p>
+        </div>
+        <div style="border-top:1px solid #eee; padding-top:1rem;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:1rem; font-weight:bold; font-size:1.2rem;">
+                <span>Total</span>
+                <span id="cart-total">₹0</span>
+            </div>
+            <button class="btn-main" style="width:100%; justify-content:center;" onclick="openCheckoutModal()">CONFIRM RESERVATION</button>
+        </div>
+    </div>
+
+    <!-- CHECKOUT FORM MODAL (NEW) -->
+    <div class="modal-overlay" id="checkout-modal">
+        <div class="modal-box">
+            <div class="close-modal" onclick="closeCheckoutModal()">&times;</div>
+            <h2 class="section-title" style="font-size: 1.8rem; text-align: left; margin-bottom: 20px;">Complete Reservation</h2>
+            <p style="margin-bottom: 20px; color: #666; font-size: 0.9rem;">We will contact you when Batch 1 is ready for shipping.</p>
+            
+            <!-- IMPORTANT: Replace 'YOUR_EMAIL_HERE' with your real email -->
+            <form action="https://formsubmit.co/ibpoffecial@gmail.com" method="POST">
+                
+                <!-- Hidden inputs for configuration -->
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_next" value="http://yoursite.com/thanks.html"> <!-- Optional: Redirect after submit -->
+                <input type="hidden" name="Order_Details" id="order-input-hidden">
+
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" required placeholder="Ex: Arjun Singh">
+                </div>
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <input type="tel" name="phone" required placeholder="Ex: 9876543210">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" required placeholder="Ex: arjun@gmail.com">
+                </div>
+                
+                <button type="submit" class="btn-main" style="width: 100%; justify-content: center; margin-top: 10px;">
+                    Secure My Slot
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- COUNTDOWN LOGIC ---
+        const launchDate = new Date();
+        launchDate.setDate(launchDate.getDate() + 10);
+
+        function updateCountdown() {
+            const now = new Date();
+            const diff = launchDate - now;
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const m = Math.floor((diff / 1000 / 60) % 60);
+            document.getElementById('days').innerText = d < 10 ? '0'+d : d;
+            document.getElementById('hours').innerText = h < 10 ? '0'+h : h;
+            document.getElementById('minutes').innerText = m < 10 ? '0'+m : m;
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // --- CART LOGIC ---
+        let cart = [];
+        const drawer = document.getElementById('cart-drawer');
+        const overlay = document.querySelector('.cart-overlay');
+        const cartContent = document.getElementById('cart-items');
+        const cartTotalSpan = document.getElementById('cart-total');
+        const badgeText = document.getElementById('cart-badge-text');
+
+        function toggleCart() {
+            drawer.classList.toggle('active');
+            overlay.style.display = drawer.classList.contains('active') ? 'block' : 'none';
+        }
+
+        function addToCart(price, name) {
+            cart.push({ name, price });
+            updateCartUI();
+            if (!drawer.classList.contains('active')) toggleCart();
+        }
+
+        function updateCartUI() {
+            badgeText.innerText = `Cart (${cart.length})`;
+            
+            if (cart.length === 0) {
+                cartContent.innerHTML = '<p style="color:#777;">Cart is empty.</p>';
+                cartTotalSpan.innerText = '₹0';
+                return;
+            }
+
+            let total = 0;
+            let html = '';
+            
+            cart.forEach(item => {
+                total += item.price;
+                html += `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom:1px solid #f0f0f0; padding-bottom:10px;">
+                        <div>
+                            <div style="font-weight:600;">${item.name}</div>
+                            <div style="font-size:0.9rem; color:#666;">Reserved</div>
+                        </div>
+                        <div style="font-weight:bold;">₹${item.price}</div>
+                    </div>
+                `;
+            });
+
+            // Check for Pod to add Free Meter
+            const hasPod = cart.some(i => i.name.includes('Aqua Pod'));
+            if(hasPod) {
+                html += `
+                    <div style="background:#fff3cd; color:#856404; padding:10px; border-radius:5px; font-size:0.9rem; margin-top:10px;">
+                        <i class="fa-solid fa-gift"></i> <strong>Bonus:</strong> Free TDS Meter added!
+                    </div>
+                `;
+            }
+
+            cartContent.innerHTML = html;
+            cartTotalSpan.innerText = '₹' + total;
+        }
+
+        // --- CHECKOUT FORM LOGIC ---
+        const modal = document.getElementById('checkout-modal');
+        const orderInput = document.getElementById('order-input-hidden');
+
+        function openCheckoutModal() {
+            if(cart.length === 0) {
+                alert("Please add items to cart first.");
+                return;
+            }
+            
+            // Convert cart items to a simple string for the email
+            const orderSummary = cart.map(item => `${item.name} (₹${item.price})`).join(", ");
+            orderInput.value = orderSummary; // Fill hidden input
+            
+            toggleCart(); // Close cart
+            modal.style.display = "flex"; // Show form
+        }
+
+        function closeCheckoutModal() {
+            modal.style.display = "none";
+        }
+
+        // Close modal on click outside
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeCheckoutModal();
+            }
+        }
+
+        // --- ANIMATIONS ---
+        gsap.registerPlugin(ScrollTrigger);
+        gsap.from(".hero-content", { y: 50, opacity: 0, duration: 1, delay: 0.2 });
+        gsap.from(".hero-img", { x: 50, opacity: 0, duration: 1, delay: 0.4 });
+        
+        gsap.utils.toArray('.step-card, .problem-card').forEach((card, i) => {
+            gsap.from(card, {
+                scrollTrigger: { trigger: card, start: "top 85%" },
+                y: 50, opacity: 0, duration: 0.6, delay: 0.1
+            });
+        });
+        
+        // Float animation CSS injection
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes float {
+                0% { transform: translateY(0px); }
+                50% { transform: translateY(-10px); }
+                100% { transform: translateY(0px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
